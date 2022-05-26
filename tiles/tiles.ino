@@ -15,7 +15,7 @@ Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
 int score = 0;
 int misses = 0;
 
-float wooded[MAX_LENGTH][2] = {
+float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odyssey
     {9,1},
     {10,2},
     {11,3},
@@ -28,7 +28,7 @@ float wooded[MAX_LENGTH][2] = {
     {19,2},
 };
 
-int IndexFix(int pixel) {
+int IndexFix(int pixel) { // Fixes pixel indexing cuz the original one is TRASH
   int i = pixel / 16;
   if (i % 2 == 0) {
     pixel = (((i+1) * 16) - pixel - 1) + (i * 16);
@@ -36,7 +36,7 @@ int IndexFix(int pixel) {
   return pixel;
 }
 
-void DrawTiles(float song[MAX_LENGTH][2]) {
+void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if it goes offscreen, it doesn't render the pixel
   for (int i = 0; i < 10; i++) {
     int posy = 3 + (song[i][0] * 4);
     int posx = 64 * (song[i][1] - 1);
@@ -58,7 +58,7 @@ void DrawTiles(float song[MAX_LENGTH][2]) {
   }
 }
 
-void ShowGrid() {
+void ShowGrid() { // shows the grid that seperates the 4 notes and shows the line where you need to time the note.
   for (int i = 0; i < 16; i++) {
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
   }
@@ -90,7 +90,7 @@ void ShowGrid() {
   }
 }
 
-void MoveTiles() {
+void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
   for (int i = 0; i < 10; i++) {
     wooded[i][0] -= 0.25f;
     if (round(wooded[i][0]) == -1) {
@@ -99,7 +99,7 @@ void MoveTiles() {
   }
 }
 
-void CheckButtons() {
+void CheckButtons() { // W.I.P checks for button presses. 12 is the first button, 11 is the second one, and so on.
   if (digitalRead(12) == LOW) {
     for (int i = 16; i <= 48; i+=16) {
       NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
@@ -116,12 +116,12 @@ void CheckButtons() {
   }
 }
 
-int delayMove = 0;
+int delayMove = 0; // The timer delay for the tiles moving down.
 
 void loop() {
-  NeoPixel.clear();
+  NeoPixel.clear(); // yea you know what this does
   
-  if (delayMove >= 20) {
+  if (delayMove >= 20) { // Every time this counter goes to 20 the notes/tiles move down 1 pixel.
     MoveTiles();
     delayMove = 0;
   }
