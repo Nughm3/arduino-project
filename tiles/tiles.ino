@@ -99,17 +99,25 @@ void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make thi
   }
 }
 
-void CheckButtons() { // W.I.P checks for button presses. 12 is the first button, 11 is the second one, and so on.
+void CheckButtons() { // W.I.P checks for button presses. PIN 12 is the first button, PIN 11 is the second one, and so on.
+  int buttonPressed = 0;
   if (digitalRead(12) == LOW) {
-    for (int i = 16; i <= 48; i+=16) {
+    buttonPressed = 1;
+    for (int i = 16; i <= 48; i+=16) { // Flashes the column that you pressed white
       NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
     }
   }
   if (digitalRead(11) == LOW) {
-    
+    buttonPressed = 2;
+    for (int i = 80; i <= 112; i+=16) {
+      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+    }
   }
   if (digitalRead(10) == LOW) {
-    
+    buttonPressed = 1;
+//    for (int i = 80; i <= 112; i+=16) {
+//      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+//    }
   }
   if (digitalRead(9) == LOW) {
     
