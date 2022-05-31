@@ -10,6 +10,8 @@
 
 #define MAX_LENGTH 200
 
+#define SONG_LENGTH 10
+
 Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
 
 int score = 0;
@@ -37,7 +39,7 @@ int IndexFix(int pixel) { // Fixes pixel indexing cuz the original one is TRASH
 }
 
 void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if it goes offscreen, it doesn't render the pixel
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < SONG_LENGTH; i++) {
     int posy = 3 + (song[i][0] * 4);
     int posx = 64 * (song[i][1] - 1);
 
@@ -91,7 +93,7 @@ void ShowGrid() { // shows the grid that seperates the 4 notes and shows the lin
 }
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < SONG_LENGTH; i++) {
     wooded[i][0] -= 0.25f;
     if (round(wooded[i][0]) == -1) {
       misses += 1;
@@ -114,13 +116,21 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 12 is the first bu
     }
   }
   if (digitalRead(10) == LOW) {
-    buttonPressed = 1;
-//    for (int i = 80; i <= 112; i+=16) {
-//      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
-//    }
+    buttonPressed = 3;
+    for (int i = 144; i <= 176; i+=16) {
+      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+    }
   }
   if (digitalRead(9) == LOW) {
-    
+    for (int i = 208; i <= 240; i+=16) {
+      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+    }
+  }
+  if (buttonPressed > 0) {
+    for (int i = 0; i < SONG_LENGTH; i++) {
+      if (wooded[i][0] <= 0 && wooded[i] >= -1 && wooded[i][1] == buttonPressed) score += 1;
+      else misses += 1;
+    }
   }
 }
 
