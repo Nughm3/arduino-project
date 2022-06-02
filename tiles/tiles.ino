@@ -101,37 +101,79 @@ void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make thi
   }
 }
 
-void CheckButtons() { // W.I.P checks for button presses. PIN 12 is the first button, PIN 11 is the second one, and so on.
+bool button1Pressed = false;
+bool button2Pressed = false;
+bool button3Pressed = false;
+bool button4Pressed = false;
+
+void CheckHit(int buttonPressed) {
+  for (int i = 0; i < SONG_LENGTH; i++) {
+    if (wooded[i][0] <= 0.25f && wooded[i][0] >= -1.25f && wooded[i][1] == buttonPressed) {
+      score += 1;
+      Serial.println("yes");
+      wooded[i][1] = -2;
+    }
+    else {
+      misses += 1;
+//      Serial.println("miss");
+    }
+  }
+}
+
+void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first button, PIN 2 is the second one, and so on.
   int buttonPressed = 0;
-  if (digitalRead(12) == LOW) {
-    buttonPressed = 1;
-    for (int i = 16; i <= 48; i+=16) { // Flashes the column that you pressed white
-      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+  
+  if (digitalRead(1) == HIGH) {
+    if (!button1Pressed) {
+      buttonPressed = 1;
+      for (int i = 16; i <= 48; i+=16) { // Flashes the column that you pressed white
+        NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+      }
+      CheckHit(buttonPressed);
     }
+    
+    button1Pressed = true;
   }
-  if (digitalRead(11) == LOW) {
-    buttonPressed = 2;
-    for (int i = 80; i <= 112; i+=16) {
-      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+  else button1Pressed = false;
+  
+  if (digitalRead(2) == HIGH) {
+    if (!button2Pressed) {
+      buttonPressed = 2;
+      for (int i = 80; i <= 112; i+=16) { // Flashes the column that you pressed white
+        NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+      }
+      CheckHit(buttonPressed);
     }
+    
+    button2Pressed = true;
   }
-  if (digitalRead(10) == LOW) {
-    buttonPressed = 3;
-    for (int i = 144; i <= 176; i+=16) {
-      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+  else button2Pressed = false;
+  
+  if (digitalRead(3) == HIGH) {
+    if (!button3Pressed) {
+      buttonPressed = 3;
+      for (int i = 144; i <= 176; i+=16) { // Flashes the column that you pressed white
+        NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+      }
+      CheckHit(buttonPressed);
     }
+    
+    button3Pressed = true;
   }
-  if (digitalRead(9) == LOW) {
-    for (int i = 208; i <= 240; i+=16) {
-      NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+  else button3Pressed = false;
+  
+  if (digitalRead(4) == HIGH) {
+    if (!button4Pressed) {
+      buttonPressed = 4;
+      for (int i = 208; i <= 240; i+=16) { // Flashes the column that you pressed white
+        NeoPixel.setPixelColor(IndexFix(i + 3), NeoPixel.Color(5, 5, 5));
+      }
+      CheckHit(buttonPressed);
     }
+    
+    button4Pressed = true;
   }
-  if (buttonPressed > 0) {
-    for (int i = 0; i < SONG_LENGTH; i++) {
-      if (wooded[i][0] <= 0 && wooded[i] >= -1 && wooded[i][1] == buttonPressed) score += 1;
-      else misses += 1;
-    }
-  }
+  else button4Pressed = false;
 }
 
 int delayMove = 0; // The timer delay for the tiles moving down.
