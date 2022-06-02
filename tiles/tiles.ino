@@ -39,12 +39,15 @@ float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odys
   {19,2},
 };
 
-float wooded_song[MAX_LENGTH][2] = {
+float wooded_song[8][2] = {
   {9,165},
   {10,196},
   {11,220},
   {12,247},
   {14,247},
+  {17,294},
+  {18,220},
+  {19,247},
 };
 
 int IndexFix(int pixel) { // Fixes pixel indexing cuz the original one is TRASH
@@ -110,7 +113,6 @@ void ShowGrid() { // shows the grid that seperates the 4 notes and shows the lin
 }
 
 int noteTimer = 0;
-bool notePlaying = false;
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
   for (int i = 0; i < SONG_LENGTH; i++) {
@@ -119,21 +121,17 @@ void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make thi
       misses += 1;
     }
 
-    wooded_song[i][0] -= 0.25f;
-
-    if (noteTimer >= 30) {
-      noTone(SPEAKER_PIN);
-      notePlaying = false;
-    }
-    
-    if (wooded_song[i][0] == -0.25f) {
-      if (!notePlaying) {
-//        tone(SPEAKER_PIN, wooded_song[i][1]);
-        noteTimer = 0;
-        notePlaying = true;
-      }
-    }
-    noteTimer += 1;
+//    wooded_song[i][0] -= 0.25f;
+//
+//    if (noteTimer >= 20) {
+//      noTone(SPEAKER_PIN);
+//    }
+//    
+//    if (wooded_song[i][0] == -0.25f) {
+//      tone(SPEAKER_PIN, wooded_song[i][1]);
+//      noteTimer = 0;
+//    }
+//    noteTimer += 1;
   }
 }
 
@@ -216,19 +214,15 @@ int delayMove = 0; // The timer delay for the tiles moving down.
 
 void loop() {
   NeoPixel.clear(); // yea you know what this does
-  
-  if (delayMove >= 1) { // Every time this counter goes to 20 the notes/tiles move down 1 pixel.
-    MoveTiles();
-    delayMove = 0;
-  }
 
   DrawTiles(wooded);
   ShowGrid();
   CheckButtons();
   NeoPixel.show();
 
-  delayMove += 1;
-  delay(100);
+//  delayMove += 1;
+  MoveTiles();
+  delay(30);
 
 }
 
