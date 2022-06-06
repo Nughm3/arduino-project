@@ -141,16 +141,17 @@ bool button3Pressed = false;
 bool button4Pressed = false;
 
 void CheckHit(int buttonPressed) {
+  bool success = false;
   for (int i = 0; i < SONG_LENGTH; i++) {
     if (wooded[i][0] <= 0.25f && wooded[i][0] >= -1.25f && wooded[i][1] == buttonPressed) {
       score += 1;
       Serial.println("yes");
       wooded[i][1] = -2;
+      success = true;
     }
-    else {
-      misses += 1;
-//      Serial.println("miss");
-    }
+  }
+  if (!success) {
+    misses += 1;
   }
 }
 
