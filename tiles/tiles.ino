@@ -128,7 +128,7 @@ void Miss() {
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
   for (int i = 0; i < SONG_LENGTH; i++) {
-    wooded[i][0] -= 0.25f;
+    if (wooded[i][0] > -3) wooded[i][0] -= 0.25f;
     if (wooded[i][0] == -1) {
       Miss();
     }
