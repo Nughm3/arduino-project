@@ -241,8 +241,6 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
   else button4Pressed = false;
 }
 
-int delayMove = 0; // The timer delay for the tiles moving down.
-
 void loop() {
 //  NeoPixel.clear(); // yea you know what this does
 
@@ -251,7 +249,6 @@ void loop() {
   CheckButtons();
   NeoPixel.show();
 
-//  delayMove += 1;
   MoveTiles();
   delay(30);
 
