@@ -63,17 +63,19 @@ void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if
     int posy = 3 + (song[i][0] * 4);
     int posx = 64 * (song[i][1] - 1);
 
-    for (int j = 0; j < 4; j++) {
+    for (int j = 0; j < 5; j++) {
+      int color = 10;
+      if (j == 4) color = 0;
       if (posy + j < 32 && posy + j >= 0) {
         if (posy + j >= 16) {
-          NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx + 256 - 16), NeoPixel.Color(10, 0, 0));
-          NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx + 256 - 16), NeoPixel.Color(10, 0, 0));
-          NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx + 256 - 16), NeoPixel.Color(10, 0, 0));
+          NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx + 256 - 16), NeoPixel.Color(color, 0, 0));
+          NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx + 256 - 16), NeoPixel.Color(color, 0, 0));
+          NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx + 256 - 16), NeoPixel.Color(color, 0, 0));
         }
         else {
-          NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx), NeoPixel.Color(10, 0, 0));
-          NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx), NeoPixel.Color(10, 0, 0));
-          NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx), NeoPixel.Color(10, 0, 0));
+          NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx), NeoPixel.Color(color, 0, 0));
+          NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx), NeoPixel.Color(color, 0, 0));
+          NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx), NeoPixel.Color(color, 0, 0));
         }
       }
     }
@@ -114,11 +116,21 @@ void ShowGrid() { // shows the grid that seperates the 4 notes and shows the lin
 
 int noteTimer = 0;
 
+void Hit() {
+  score += 1;
+  Serial.println("Nice");
+}
+
+void Miss() {
+  misses += 1;
+  Serial.println("f");
+}
+
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
   for (int i = 0; i < SONG_LENGTH; i++) {
     wooded[i][0] -= 0.25f;
-    if (round(wooded[i][0]) == -1) {
-      misses += 1;
+    if (wooded[i][0] == -1) {
+      Miss();
     }
 
 //    wooded_song[i][0] -= 0.25f;
@@ -144,14 +156,32 @@ void CheckHit(int buttonPressed) {
   bool success = false;
   for (int i = 0; i < SONG_LENGTH; i++) {
     if (wooded[i][0] <= 0.25f && wooded[i][0] >= -1.25f && wooded[i][1] == buttonPressed) {
-      score += 1;
-      Serial.println("yes");
-      wooded[i][1] = -2;
+      Hit();
+
+      int posy = 3 + (wooded[i][0] * 4); //Clear the tile after it is hit correctly
+      int posx = 64 * (wooded[i][1] - 1);
+  
+      for (int j = 0; j < 4; j++) {
+        if (posy + j < 32 && posy + j >= 0) {
+          if (posy + j >= 16) {
+            NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx + 256 - 16), NeoPixel.Color(0, 0, 0));
+            NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx + 256 - 16), NeoPixel.Color(0, 0, 0));
+            NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx + 256 - 16), NeoPixel.Color(0, 0, 0));
+          }
+          else {
+            NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx), NeoPixel.Color(0, 0, 0));
+            NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx), NeoPixel.Color(0, 0, 0));
+            NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx), NeoPixel.Color(0, 0, 0));
+          }
+        }
+      }
+      
+      wooded[i][0] = -2;
       success = true;
     }
   }
   if (!success) {
-    misses += 1;
+    Miss();
   }
 }
 
@@ -214,7 +244,7 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
 int delayMove = 0; // The timer delay for the tiles moving down.
 
 void loop() {
-  NeoPixel.clear(); // yea you know what this does
+//  NeoPixel.clear(); // yea you know what this does
 
   DrawTiles(wooded);
   ShowGrid();
