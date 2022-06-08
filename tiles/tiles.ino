@@ -4,6 +4,7 @@
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
+#include <LiquidCrystal_I2C.h>
 
 #define PIN_NEO_PIXEL  13
 #define NUM_PIXELS     512
@@ -13,6 +14,7 @@
 #define SONG_LENGTH 10
 
 Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 int SPEAKER_PIN = 8;
 
@@ -24,7 +26,6 @@ void Break(int wait) {
 
 
 int score = 0;
-int misses = 0;
 
 float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odyssey
   {9,1},
@@ -117,13 +118,19 @@ void ShowGrid() { // shows the grid that seperates the 4 notes and shows the lin
 int noteTimer = 0;
 
 void Hit() {
-  score += 1;
-  Serial.println("Nice");
+  score += 100;
+
+  lcd.clear();
+  lcd.print("Score: ");
+  lcd.print(score);
 }
 
 void Miss() {
-  misses += 1;
-  Serial.println("f");
+  score -= 30;
+
+  lcd.clear();
+  lcd.print("Score: ");
+  lcd.print(score);
 }
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
@@ -251,12 +258,19 @@ void loop() {
 
   MoveTiles();
   delay(30);
-
 }
 
 void setup() {
   NeoPixel.begin();
   pinMode(SPEAKER_PIN, OUTPUT);
   pinMode(12, INPUT);
+
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.clear();
+  lcd.print("Score: ");
+  lcd.print(score);
+
   Serial.begin(9600);
 }
