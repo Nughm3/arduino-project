@@ -116,21 +116,46 @@ void ShowGrid() { // shows the grid that seperates the 4 notes and shows the lin
 }
 
 int noteTimer = 0;
+int combo = 0;
+int notesPassed = 0;
+
+void ShowScore(String type) {
+  lcd.clear();
+
+  lcd.setCursor(0, 0);
+  if (type == "hit") lcd.print("Hit!");
+  if (type == "miss") lcd.print("Miss!");
+
+  lcd.setCursor(6, 0);
+  lcd.print(combo);
+  lcd.print("x Combo");
+  
+  lcd.setCursor(0, 1);
+  lcd.print("Score: ");
+  lcd.print(score);
+
+  lcd.setCursor(12, 1);
+  int accuracy = round((notesPassed - misses) / notesPassed * 100);
+  lcd.print(accuracy);
+  lcd.print("%");
+}
 
 void Hit() {
   score += 100;
+  notesPassed += 1;
 
-  lcd.clear();
-  lcd.print("Score: ");
-  lcd.print(score);
+  ShowScore("hit");
 }
 
-void Miss() {
-  score -= 30;
+int misses = 0;
 
-  lcd.clear();
-  lcd.print("Score: ");
-  lcd.print(score);
+void Miss() {
+  notesPassed += 1;
+  score -= 30;
+  if (score < 0) score = 0;
+  misses += 1;
+
+  ShowScore("miss");
 }
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
@@ -267,10 +292,7 @@ void setup() {
 
   lcd.init();
   lcd.backlight();
-  lcd.setCursor(0, 0);
-  lcd.clear();
-  lcd.print("Score: ");
-  lcd.print(score);
+  ShowScore("none");
 
   Serial.begin(9600);
 }
