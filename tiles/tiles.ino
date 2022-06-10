@@ -13,6 +13,10 @@
 
 #define SONG_LENGTH 10
 
+//#include <Tone.h>
+
+//Tone tone1;
+
 Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -118,44 +122,39 @@ void ShowGrid() { // shows the grid that seperates the 4 notes and shows the lin
 int noteTimer = 0;
 int combo = 0;
 int notesPassed = 0;
+int misses = 0;
 
-void ShowScore(String type) {
+void ShowScore() {
   lcd.clear();
-
+  
   lcd.setCursor(0, 0);
-  if (type == "hit") lcd.print("Hit!");
-  if (type == "miss") lcd.print("Miss!");
-
-  lcd.setCursor(6, 0);
   lcd.print(combo);
   lcd.print("x Combo");
-  
+
   lcd.setCursor(0, 1);
   lcd.print("Score: ");
   lcd.print(score);
 
-  lcd.setCursor(12, 1);
-  int accuracy = round((notesPassed - misses) / notesPassed * 100);
-  lcd.print(accuracy);
-  lcd.print("%");
+//  lcd.setCursor(12, 1);
+//  int accuracy = round((notesPassed - misses) / notesPassed * 100);
+//  lcd.print(accuracy);
+//  lcd.print("%");
 }
 
 void Hit() {
   score += 100;
   notesPassed += 1;
+  combo += 1;
 
-  ShowScore("hit");
 }
-
-int misses = 0;
 
 void Miss() {
   notesPassed += 1;
   score -= 30;
   if (score < 0) score = 0;
   misses += 1;
+  combo = 0;
 
-  ShowScore("miss");
 }
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
@@ -220,7 +219,7 @@ void CheckHit(int buttonPressed) {
 void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first button, PIN 2 is the second one, and so on.
   int buttonPressed = 0;
   
-  if (digitalRead(1) == HIGH) {
+  if (digitalRead(4) == HIGH) {
     if (!button1Pressed) {
       buttonPressed = 1;
       for (int i = 16; i <= 48; i+=16) { // Flashes the column that you pressed white
@@ -233,7 +232,7 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
   }
   else button1Pressed = false;
   
-  if (digitalRead(2) == HIGH) {
+  if (digitalRead(5) == HIGH) {
     if (!button2Pressed) {
       buttonPressed = 2;
       for (int i = 80; i <= 112; i+=16) { // Flashes the column that you pressed white
@@ -246,7 +245,7 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
   }
   else button2Pressed = false;
   
-  if (digitalRead(3) == HIGH) {
+  if (digitalRead(6) == HIGH) {
     if (!button3Pressed) {
       buttonPressed = 3;
       for (int i = 144; i <= 176; i+=16) { // Flashes the column that you pressed white
@@ -259,7 +258,7 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
   }
   else button3Pressed = false;
   
-  if (digitalRead(4) == HIGH) {
+  if (digitalRead(7) == HIGH) {
     if (!button4Pressed) {
       buttonPressed = 4;
       for (int i = 208; i <= 240; i+=16) { // Flashes the column that you pressed white
@@ -273,6 +272,8 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
   else button4Pressed = false;
 }
 
+int lcdUpdate = 0;
+
 void loop() {
 //  NeoPixel.clear(); // yea you know what this does
 
@@ -280,8 +281,14 @@ void loop() {
   ShowGrid();
   CheckButtons();
   NeoPixel.show();
-
   MoveTiles();
+
+  lcdUpdate += 1;
+  if (lcdUpdate >= 10) {
+    ShowScore();
+    lcdUpdate = 0;
+  }
+  
   delay(30);
 }
 
@@ -292,7 +299,7 @@ void setup() {
 
   lcd.init();
   lcd.backlight();
-  ShowScore("none");
+  ShowScore();
 
   Serial.begin(9600);
 }
