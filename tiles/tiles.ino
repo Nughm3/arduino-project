@@ -13,21 +13,8 @@
 
 #define SONG_LENGTH 10
 
-//#include <Tone.h>
-
-//Tone tone1;
-
 Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-
-int SPEAKER_PIN = 8;
-
-void Break(int wait) {
-  delay(125);
-  noTone(SPEAKER_PIN);
-  delay(wait-125);
-}
-
 
 int score = 0;
 
@@ -45,21 +32,19 @@ float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odys
 };
 
 float wooded_song[8][2] = {
-  {9,165},
-  {10,196},
-  {11,220},
-  {12,247},
-  {14,247},
-  {17,294},
-  {18,220},
-  {19,247},
+//  {9,NOTE_C4},
+//  {10,NOTE_C4},
+//  {11,NOTE_C4},
+//  {12,NOTE_C4},
+//  {14,NOTE_C4},
+//  {17,NOTE_C4},
+//  {18,NOTE_C4},
+//  {19,NOTE_C4},
 };
 
 int IndexFix(int pixel) { // Fixes pixel indexing cuz the original one is TRASH
   int i = pixel / 16;
-  if (i % 2 == 0) {
-    pixel = (((i+1) * 16) - pixel - 1) + (i * 16);
-  }
+  if (i % 2 == 0) pixel = (((i+1) * 16) - pixel - 1) + (i * 16);
   return pixel;
 }
 
@@ -76,8 +61,7 @@ void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if
           NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx + 256 - 16), NeoPixel.Color(color, 0, 0));
           NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx + 256 - 16), NeoPixel.Color(color, 0, 0));
           NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx + 256 - 16), NeoPixel.Color(color, 0, 0));
-        }
-        else {
+        } else {
           NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx), NeoPixel.Color(color, 0, 0));
           NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx), NeoPixel.Color(color, 0, 0));
           NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx), NeoPixel.Color(color, 0, 0));
@@ -88,35 +72,32 @@ void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if
 }
 
 void ShowGrid() { // shows the grid that seperates the 4 notes and shows the line where you need to time the note.
-  for (int i = 0; i < 16; i++) {
+  for (int i = 0; i < 16; i++)
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
-  }
-  for (int i = 64; i < 80; i++) {
+     
+  for (int i = 64; i < 80; i++)
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
-  }
-  for (int i = 128; i < 144; i++) {
+     
+  for (int i = 128; i < 144; i++)
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
-  }
-  for (int i = 192; i < 208; i++) {
+     
+  for (int i = 192; i < 208; i++)
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
-  }
-
-  for (int i = 256; i < 272; i++) {
+     
+  for (int i = 256; i < 272; i++)
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
-  }
-  for (int i = 320; i < 336; i++) {
+     
+  for (int i = 320; i < 336; i++)
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
-  }
-  for (int i = 384; i < 400; i++) {
+     
+  for (int i = 384; i < 400; i++)
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
-  }
-  for (int i = 448; i < 464; i++) {
+     
+  for (int i = 448; i < 464; i++)
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
-  }  
   
-  for (int i = 0; i < 16; i++) {
+  for (int i = 0; i < 16; i++)
      NeoPixel.setPixelColor(IndexFix((i*16) + 3), NeoPixel.Color(0, 5, 0));
-  }
 }
 
 int noteTimer = 0;
@@ -145,7 +126,6 @@ void Hit() {
   score += 100;
   notesPassed += 1;
   combo += 1;
-
 }
 
 void Miss() {
@@ -154,7 +134,6 @@ void Miss() {
   if (score < 0) score = 0;
   misses += 1;
   combo = 0;
-
 }
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
@@ -165,16 +144,10 @@ void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make thi
     }
 
 //    wooded_song[i][0] -= 0.25f;
-//
-//    if (noteTimer >= 20) {
-//      noTone(SPEAKER_PIN);
+//    if (wooded_song[i][0] == 0) {
+//      melody.play(wooded_song[i][1], 125);
 //    }
-//    
-//    if (wooded_song[i][0] == -0.25f) {
-//      tone(SPEAKER_PIN, wooded_song[i][1]);
-//      noteTimer = 0;
-//    }
-//    noteTimer += 1;
+    
   }
 }
 
@@ -198,8 +171,7 @@ void CheckHit(int buttonPressed) {
             NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx + 256 - 16), NeoPixel.Color(0, 0, 0));
             NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx + 256 - 16), NeoPixel.Color(0, 0, 0));
             NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx + 256 - 16), NeoPixel.Color(0, 0, 0));
-          }
-          else {
+          } else {
             NeoPixel.setPixelColor(IndexFix(posy + j + 16 + posx), NeoPixel.Color(0, 0, 0));
             NeoPixel.setPixelColor(IndexFix(posy + j + 32 + posx), NeoPixel.Color(0, 0, 0));
             NeoPixel.setPixelColor(IndexFix(posy + j + 48 + posx), NeoPixel.Color(0, 0, 0));
@@ -211,12 +183,11 @@ void CheckHit(int buttonPressed) {
       success = true;
     }
   }
-  if (!success) {
-    Miss();
-  }
+  
+  if (!success) Miss();
 }
 
-void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first button, PIN 2 is the second one, and so on.
+void CheckButtons() { // checks for button presses. PIN 1 is the first button, PIN 2 is the second one, and so on.
   int buttonPressed = 0;
   
   if (digitalRead(4) == HIGH) {
@@ -229,8 +200,7 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
     }
     
     button1Pressed = true;
-  }
-  else button1Pressed = false;
+  } else button1Pressed = false;
   
   if (digitalRead(5) == HIGH) {
     if (!button2Pressed) {
@@ -242,8 +212,7 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
     }
     
     button2Pressed = true;
-  }
-  else button2Pressed = false;
+  } else button2Pressed = false;
   
   if (digitalRead(6) == HIGH) {
     if (!button3Pressed) {
@@ -255,8 +224,7 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
     }
     
     button3Pressed = true;
-  }
-  else button3Pressed = false;
+  } else button3Pressed = false;
   
   if (digitalRead(7) == HIGH) {
     if (!button4Pressed) {
@@ -268,15 +236,13 @@ void CheckButtons() { // W.I.P checks for button presses. PIN 1 is the first but
     }
     
     button4Pressed = true;
-  }
-  else button4Pressed = false;
+  } else button4Pressed = false;
 }
 
 int lcdUpdate = 0;
 
 void loop() {
-//  NeoPixel.clear(); // yea you know what this does
-
+  NeoPixel.clear();
   DrawTiles(wooded);
   ShowGrid();
   CheckButtons();
@@ -294,12 +260,12 @@ void loop() {
 
 void setup() {
   NeoPixel.begin();
-  pinMode(SPEAKER_PIN, OUTPUT);
-  pinMode(12, INPUT);
 
   lcd.init();
   lcd.backlight();
   ShowScore();
 
   Serial.begin(9600);
+
+//  melody.begin(8);
 }
