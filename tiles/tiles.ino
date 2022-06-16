@@ -16,7 +16,7 @@
 Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-bool inMenu = false;
+bool inMenu = true;
 int score = 0;
 
 float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odyssey
@@ -32,7 +32,9 @@ float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odys
   {19,2},
 };
 
-float wooded_song[8][2] = {
+float current_song[MAX_LENGTH][2] = {};
+
+float menu_song[MAX_LENGTH][2] = {
 //  {9,NOTE_C4},
 //  {10,NOTE_C4},
 //  {11,NOTE_C4},
@@ -47,6 +49,15 @@ int IndexFix(int pixel) { // Fixes pixel indexing cuz the original one is TRASH
   int i = pixel / 16;
   if (i % 2 == 0) pixel = (((i+1) * 16) - pixel - 1) + (i * 16);
   return pixel;
+}
+
+void ChooseSong(int song) {
+  for (int i = 0; i < MAX_LENGTH; i++) {
+    if (song == 1) {
+      current_song[i][0] = wooded[i][0];
+      current_song[i][1] = wooded[i][1];
+    }
+  }
 }
 
 void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if it goes offscreen, it doesn't render the pixel
@@ -118,20 +129,23 @@ int notesPassed = 0;
 int misses = 0;
 
 void ShowScore() {
-  lcd.clear();
+  if (!inMenu) {
+    
+    lcd.clear();
+    
+    lcd.setCursor(0, 0);
+    lcd.print(combo);
+    lcd.print("x Combo");
   
-  lcd.setCursor(0, 0);
-  lcd.print(combo);
-  lcd.print("x Combo");
-
-  lcd.setCursor(0, 1);
-  lcd.print("Score: ");
-  lcd.print(score);
-
-//  lcd.setCursor(12, 1);
-//  int accuracy = round((notesPassed - misses) / notesPassed * 100);
-//  lcd.print(accuracy);
-//  lcd.print("%");
+    lcd.setCursor(0, 1);
+    lcd.print("Score: ");
+    lcd.print(score);
+  
+  //  lcd.setCursor(12, 1);
+  //  int accuracy = round((notesPassed - misses) / notesPassed * 100);
+  //  lcd.print(accuracy);
+  //  lcd.print("%");
+  }
 }
 
 void Hit() {
@@ -150,15 +164,10 @@ void Miss() {
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
   for (int i = 0; i < SONG_LENGTH; i++) {
-    if (wooded[i][0] > -3) wooded[i][0] -= 0.25f;
-    if (wooded[i][0] == -1) {
+    if (current_song[i][0] > -3) current_song[i][0] -= 0.25f;
+    if (current_song[i][0] == -1) {
       Miss();
     }
-
-//    wooded_song[i][0] -= 0.25f;
-//    if (wooded_song[i][0] == 0) {
-//      melody.play(wooded_song[i][1], 125);
-//    }
     
   }
 }
@@ -171,11 +180,11 @@ bool button4Pressed = false;
 void CheckHit(int buttonPressed) {
   bool success = false;
   for (int i = 0; i < SONG_LENGTH; i++) {
-    if (wooded[i][0] <= 0.25f && wooded[i][0] >= -1.25f && wooded[i][1] == buttonPressed) {
+    if (current_song[i][0] <= 0.25f && current_song[i][0] >= -1.25f && current_song[i][1] == buttonPressed) {
       Hit();
 
-      int posy = 3 + (wooded[i][0] * 4); //Clear the tile after it is hit correctly
-      int posx = 64 * (wooded[i][1] - 1);
+      int posy = 3 + (current_song[i][0] * 4); //Clear the tile after it is hit correctly
+      int posx = 64 * (current_song[i][1] - 1);
   
       for (int j = 0; j < 4; j++) {
         if (posy + j < 32 && posy + j >= 0) {
@@ -191,7 +200,7 @@ void CheckHit(int buttonPressed) {
         }
       }
       
-      wooded[i][0] = -2;
+      current_song[i][0] = -2;
       success = true;
     }
   }
@@ -251,11 +260,101 @@ void CheckButtons() { // checks for button presses. PIN 1 is the first button, P
   } else button4Pressed = false;
 }
 
+byte left_arrow[8] = {
+  0b00000,
+  0b00010,
+  0b00110,
+  0b01110,
+  0b01110,
+  0b00110,
+  0b00010,
+  0b00000
+};
+
+byte right_arrow[8] = {
+  0b00000,
+  0b01000,
+  0b01100,
+  0b01110,
+  0b01110,
+  0b01100,
+  0b01000,
+  0b00000
+};
+
+int selected_song = 1;
+
+void ShowMenu() {
+  lcd.createChar(0, left_arrow);
+  lcd.createChar(1, right_arrow);
+  lcd.setCursor(2, 0);
+  lcd.print("Choose song:");
+  lcd.setCursor(0, 1);
+  lcd.write((byte)0);
+  lcd.setCursor(15, 1);
+  lcd.write((byte)1);
+
+  if (selected_song == 1) {
+    lcd.setCursor(1, 1);
+    lcd.print("Wooded Kingdom");
+  }
+  
+  for (int i = 42; i <= 43; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(5, 0, 0));
+  for (int i = 57; i <= 60; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(5, 0, 0));
+  for (int i = 73; i <= 76; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(5, 0, 0));
+  for (int i = 90; i <= 91; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(5, 0, 0));
+
+  for (int i = 170; i <= 171; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(0, 5, 0));
+  for (int i = 185; i <= 188; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(0, 5, 0));
+  for (int i = 201; i <= 204; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(0, 5, 0));
+  for (int i = 218; i <= 219; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(0, 5, 0));
+
+  for (int i = 35; i <= 37; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
+  for (int i = 50; i <= 54; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
+  for (int i = 20; i <= 100; i+=16) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
+
+  for (int i = 211; i <= 213; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
+  for (int i = 194; i <= 198; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
+  for (int i = 148; i <= 228; i+=16) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(1, 1, 0));
+  
+  /* --------------- */
+  
+  for (int i = 19; i <= 20; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 5));
+  for (int i = 34; i <= 37; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 5));
+  for (int i = 50; i <= 53; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 5));
+  for (int i = 67; i <= 68; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 5));
+
+  for (int i = 97; i <= 102; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+  for (int i = 118; i <= 150; i+=16) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+  for (int i = 113; i <= 145; i+=16) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+  for (int i = 146; i <= 147; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+  NeoPixel.setPixelColor(IndexFix(131 + 256), NeoPixel.Color(1, 1, 0));
+
+  for (int i = 177; i <= 182; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+  for (int i = 225; i <= 230; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+  for (int i = 193; i <= 209; i+=16) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+  for (int i = 198; i <= 214; i+=16) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+
+  /* --------------- */
+
+  for (int i = 74; i <= 76; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 0, 0));
+  for (int i = 90; i <= 92; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 0, 0));
+
+  for (int i = 171; i <= 173; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+  for (int i = 187; i <= 189; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(1, 1, 0));
+
+  for (int i = 140; i <= 142; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 1, 0));
+  for (int i = 156; i <= 158; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 1, 0));
+
+  for (int i = 110; i <= 111; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 1));
+  for (int i = 126; i <= 127; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 1));
+}
+
 int lcdUpdate = 0;
 
 void loop() {
   if (!inMenu) {
-    DrawTiles(wooded);
+    DrawTiles(current_song);
     ShowGrid();
     CheckButtons();
     MoveTiles();
@@ -283,7 +382,12 @@ void setup() {
   lcd.clear();
   ShowScore();
 
+  if (inMenu) {
+    ShowMenu();
+  }
+
   Serial.begin(9600);
+  ChooseSong(1);
 
 //  melody.begin(8);
 }
