@@ -13,6 +13,10 @@
 
 #define SONG_LENGTH 10
 
+#include <Tone.h>
+Tone bass;
+Tone melody;
+
 Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -34,15 +38,59 @@ float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odys
 
 float current_song[MAX_LENGTH][2] = {};
 
-float menu_song[MAX_LENGTH][2] = {
-//  {9,NOTE_C4},
-//  {10,NOTE_C4},
-//  {11,NOTE_C4},
-//  {12,NOTE_C4},
-//  {14,NOTE_C4},
-//  {17,NOTE_C4},
-//  {18,NOTE_C4},
-//  {19,NOTE_C4},
+float menu_song[MAX_LENGTH][3] = {
+  {2.25,NOTE_E3, 0},
+  {2.5,NOTE_G3, 0},
+  {2.75,NOTE_A3, 0},
+  {3,NOTE_B3, 0},
+  {3.5,NOTE_B3, 0},
+  {4.25,NOTE_D4, 0},
+  {4.5,NOTE_A3, 0},
+  {4.75,NOTE_B3, 0},
+  {6.25,NOTE_E3, 0},
+  {6.5,NOTE_G3, 0},
+  {6.75,NOTE_A3, 0},
+  {7,NOTE_B3, 0},
+  {7.5,NOTE_B3, 0},
+  {8.25,NOTE_E4, 0},
+  {8.5,NOTE_D4, 0},
+  {8.75,NOTE_B3, 0},
+  {10.25,NOTE_E3, 0},
+  {10.5,NOTE_G3, 0},
+  {10.75,NOTE_A3, 0},
+/* -------------------- */
+  {3,NOTE_E2, 1},
+  {3.25,NOTE_E2, 1},
+  {3.5,NOTE_E3, 1},
+  {3.75,NOTE_E2, 1},
+  {4,NOTE_E2, 1},
+  {4.25,NOTE_E2, 1},
+  {4.5,NOTE_E3, 1},
+  {4.75,NOTE_E2, 1},
+  {5,NOTE_E2, 1},
+  {5.25,NOTE_E2, 1},
+  {5.5,NOTE_E3, 1},
+  {5.75,NOTE_E2, 1},
+  {6,NOTE_E2, 1},
+  {6.25,NOTE_E2, 1},
+  {6.5,NOTE_E3, 1},
+  {6.75,NOTE_E2, 1},
+  {7,NOTE_G2, 1},
+  {7.25,NOTE_G2, 1},
+  {7.5,NOTE_G3, 1},
+  {7.75,NOTE_G2, 1},
+  {8,NOTE_G2, 1},
+  {8.25,NOTE_G2, 1},
+  {8.5,NOTE_G3, 1},
+  {8.75,NOTE_G2, 1},
+  {9,NOTE_G2, 1},
+  {9.25,NOTE_G2, 1},
+  {9.5,NOTE_G3, 1},
+  {9.75,NOTE_G2, 1},
+  {10,NOTE_G2, 1},
+  {10.25,NOTE_G2, 1},
+  {10.5,NOTE_G3, 1},
+  {10.75,NOTE_G2, 1},
 };
 
 int IndexFix(int pixel) { // Fixes pixel indexing cuz the original one is TRASH
@@ -350,6 +398,19 @@ void ShowMenu() {
   for (int i = 126; i <= 127; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 1));
 }
 
+float menu_music = 0;
+
+void MenuMusic() {
+  for (int i = 0; i < MAX_LENGTH; i++) {
+    if (menu_song[i][0] == menu_music) {
+      if (menu_song[i][2] == 0) melody.play(menu_song[i][1], 125);
+      if (menu_song[i][2] == 1) bass.play(menu_song[i][1], 125);
+    }
+  }
+
+  menu_music += 0.125f;
+}
+
 int lcdUpdate = 0;
 
 void loop() {
@@ -367,7 +428,8 @@ void loop() {
     delay(30);
   }
   else {
-    
+    MenuMusic();
+    delay(90);
   }
   NeoPixel.show();
 }
@@ -389,5 +451,6 @@ void setup() {
   Serial.begin(9600);
   ChooseSong(1);
 
-//  melody.begin(8);
+  bass.begin(8);
+  melody.begin(9);
 }
