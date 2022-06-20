@@ -38,6 +38,8 @@ float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odys
 
 float current_song[MAX_LENGTH][2] = {};
 
+float song_length[3] = {250, 5, 5};
+
 float menu_song[MAX_LENGTH][3] = {
   {2.25,NOTE_E3, 0},
   {2.5,NOTE_G3, 0},
@@ -168,7 +170,7 @@ void ShowGrid() { // shows the grid that seperates the 4 notes and shows the lin
      NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(3, 1, 0));
   
   for (int i = 0; i < 16; i++)
-     NeoPixel.setPixelColor(IndexFix((i*16) + 3), NeoPixel.Color(0, 5, 0));
+     NeoPixel.setPixelColor(IndexFix((i*16) + 3), NeoPixel.Color(2, 0, 5));
 }
 
 int noteTimer = 0;
@@ -196,19 +198,25 @@ void ShowScore() {
   }
 }
 
+float comboMultiplier = 1;
+
 void Hit() {
-  score += 100;
+  score += 100 * comboMultiplier;
   notesPassed += 1;
   combo += 1;
+  comboMultiplier *= 1.1;
 }
 
 void Miss() {
   notesPassed += 1;
-  score -= 30;
+  score -= 50;
   if (score < 0) score = 0;
   misses += 1;
   combo = 0;
+  comboMultiplier = 1;
 }
+
+float song_length_left;
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
   for (int i = 0; i < SONG_LENGTH; i++) {
@@ -216,7 +224,12 @@ void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make thi
     if (current_song[i][0] == -1) {
       Miss();
     }
-    
+    song_length_left -= 0.25f;
+    if (song_length_left <= 0) {
+      inMenu = true;
+      NeoPixel.clear();
+      ShowMenu();
+    }
   }
 }
 
@@ -333,8 +346,7 @@ byte right_arrow[8] = {
 int selected_song = 1;
 
 void ShowMenu() {
-  lcd.createChar(0, left_arrow);
-  lcd.createChar(1, right_arrow);
+  lcd.clear();
   lcd.setCursor(2, 0);
   lcd.print("Choose song:");
   lcd.setCursor(0, 1);
@@ -345,6 +357,14 @@ void ShowMenu() {
   if (selected_song == 1) {
     lcd.setCursor(1, 1);
     lcd.print("Wooded Kingdom");
+  }
+  if (selected_song == 2) {
+    lcd.setCursor(1, 1);
+    lcd.print("Test2");
+  }
+  if (selected_song == 3) {
+    lcd.setCursor(1, 1);
+    lcd.print("Test3");
   }
   
   for (int i = 42; i <= 43; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(5, 0, 0));
@@ -411,6 +431,45 @@ void MenuMusic() {
   menu_music += 0.125f;
 }
 
+bool button1PressedMenu = false;
+bool button2PressedMenu = false;
+bool button3PressedMenu = false;
+
+void CheckMenuButtons() {  
+  if (digitalRead(4) == HIGH) {
+    if (!button1PressedMenu) {
+      if (selected_song > 1) selected_song -= 1;
+      ShowMenu();
+    }
+    button1PressedMenu = true;
+  } else button1PressedMenu = false;
+
+  if (digitalRead(5) == HIGH) {
+    if (!button2PressedMenu) {
+
+      for (int i = 0; i < MAX_LENGTH; i++) {
+        current_song[i][0] = 10000;
+        current_song[i][1] = 1;
+      }
+      
+      song_length_left = song_length[selected_song - 1];
+      ChooseSong(selected_song);
+      NeoPixel.clear();
+      comboMultiplier = 1;
+      inMenu = false;
+    }
+    button2PressedMenu = true;
+  } else button2PressedMenu = false;
+
+  if (digitalRead(6) == HIGH) {
+    if (!button3PressedMenu) {
+      if (selected_song < 3) selected_song += 1;
+      ShowMenu();
+    }
+    button3PressedMenu = true;
+  } else button3PressedMenu = false;
+}
+
 int lcdUpdate = 0;
 
 void loop() {
@@ -429,6 +488,7 @@ void loop() {
   }
   else {
     MenuMusic();
+    CheckMenuButtons();
     delay(90);
   }
   NeoPixel.show();
@@ -449,8 +509,10 @@ void setup() {
   }
 
   Serial.begin(9600);
-  ChooseSong(1);
 
   bass.begin(8);
   melody.begin(9);
+
+  lcd.createChar(0, left_arrow);
+  lcd.createChar(1, right_arrow);
 }
