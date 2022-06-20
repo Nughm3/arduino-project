@@ -34,65 +34,45 @@ float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odys
   {17,3},
   {18,1},
   {19,2},
+  {25,1},
+  {26,2},
+  {27,3},
+  {28,2},
+  {28,4},
+  {30,2},
+  {30,4},
+  {33,4},
+  {34,3},
+  {35,1},
+  {41,1},
+  {42,2},
+  {43,3},
+  {44,4},
+  {44,3},
+  {46,4},
+  {46,3},
+  {49,3},
+  {50,2},
+  {51,1},
+  {57,3},
+  {58,4},
+  {59,5},
+  /*------*/
+  {73,1},
+  {74,2},
+  {75,3},
 };
 
 float current_song[MAX_LENGTH][2] = {};
 
-float song_length[3] = {250, 5, 5};
+float song_length[3] = {1000, 5, 5};
 
 float menu_song[MAX_LENGTH][3] = {
   {2.25,NOTE_E3, 0},
   {2.5,NOTE_G3, 0},
-  {2.75,NOTE_A3, 0},
-  {3,NOTE_B3, 0},
-  {3.5,NOTE_B3, 0},
-  {4.25,NOTE_D4, 0},
-  {4.5,NOTE_A3, 0},
-  {4.75,NOTE_B3, 0},
-  {6.25,NOTE_E3, 0},
-  {6.5,NOTE_G3, 0},
-  {6.75,NOTE_A3, 0},
-  {7,NOTE_B3, 0},
-  {7.5,NOTE_B3, 0},
-  {8.25,NOTE_E4, 0},
-  {8.5,NOTE_D4, 0},
-  {8.75,NOTE_B3, 0},
-  {10.25,NOTE_E3, 0},
-  {10.5,NOTE_G3, 0},
-  {10.75,NOTE_A3, 0},
 /* -------------------- */
   {3,NOTE_E2, 1},
   {3.25,NOTE_E2, 1},
-  {3.5,NOTE_E3, 1},
-  {3.75,NOTE_E2, 1},
-  {4,NOTE_E2, 1},
-  {4.25,NOTE_E2, 1},
-  {4.5,NOTE_E3, 1},
-  {4.75,NOTE_E2, 1},
-  {5,NOTE_E2, 1},
-  {5.25,NOTE_E2, 1},
-  {5.5,NOTE_E3, 1},
-  {5.75,NOTE_E2, 1},
-  {6,NOTE_E2, 1},
-  {6.25,NOTE_E2, 1},
-  {6.5,NOTE_E3, 1},
-  {6.75,NOTE_E2, 1},
-  {7,NOTE_G2, 1},
-  {7.25,NOTE_G2, 1},
-  {7.5,NOTE_G3, 1},
-  {7.75,NOTE_G2, 1},
-  {8,NOTE_G2, 1},
-  {8.25,NOTE_G2, 1},
-  {8.5,NOTE_G3, 1},
-  {8.75,NOTE_G2, 1},
-  {9,NOTE_G2, 1},
-  {9.25,NOTE_G2, 1},
-  {9.5,NOTE_G3, 1},
-  {9.75,NOTE_G2, 1},
-  {10,NOTE_G2, 1},
-  {10.25,NOTE_G2, 1},
-  {10.5,NOTE_G3, 1},
-  {10.75,NOTE_G2, 1},
 };
 
 int IndexFix(int pixel) { // Fixes pixel indexing cuz the original one is TRASH
@@ -111,7 +91,7 @@ void ChooseSong(int song) {
 }
 
 void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if it goes offscreen, it doesn't render the pixel
-  for (int i = 0; i < SONG_LENGTH; i++) {
+  for (int i = 0; i < MAX_LENGTH; i++) {
     int posy = 3 + (song[i][0] * 4);
     int posx = 64 * (song[i][1] - 1);
 
@@ -205,6 +185,7 @@ void Hit() {
   notesPassed += 1;
   combo += 1;
   comboMultiplier *= 1.1;
+  if (comboMultiplier > 2) comboMultipler = 2;
 }
 
 void Miss() {
@@ -219,7 +200,7 @@ void Miss() {
 float song_length_left;
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
-  for (int i = 0; i < SONG_LENGTH; i++) {
+  for (int i = 0; i < MAX_LENGTH; i++) {
     if (current_song[i][0] > -3) current_song[i][0] -= 0.25f;
     if (current_song[i][0] == -1) {
       Miss();
@@ -227,6 +208,7 @@ void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make thi
     song_length_left -= 0.25f;
     if (song_length_left <= 0) {
       inMenu = true;
+      menu_music = 0;
       NeoPixel.clear();
       ShowMenu();
     }
@@ -240,7 +222,7 @@ bool button4Pressed = false;
 
 void CheckHit(int buttonPressed) {
   bool success = false;
-  for (int i = 0; i < SONG_LENGTH; i++) {
+  for (int i = 0; i < MAX_LENGTH; i++) {
     if (current_song[i][0] <= 0.25f && current_song[i][0] >= -1.25f && current_song[i][1] == buttonPressed) {
       Hit();
 
@@ -429,6 +411,7 @@ void MenuMusic() {
   }
 
   menu_music += 0.125f;
+  if (menu_music >= 200) menu_music = 0;
 }
 
 bool button1PressedMenu = false;
