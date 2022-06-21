@@ -403,7 +403,7 @@ float yoshi[MAX_LENGTH][2] = { // Song 3 Layout. "Athletic Theme" - Yoshi's Isla
 
 float current_song[MAX_LENGTH][2] = {};
 
-float menu_song[MAX_LENGTH][3] = {
+float menu_song[MAX_LENGTH][3] = { // Menu Music. "Delfino Plaza" - Super Mario Sunshine (2002)
   {4, NOTE_E4, 0},
   {4.25, NOTE_E4, 0},
   {4.5, NOTE_G4, 0},
