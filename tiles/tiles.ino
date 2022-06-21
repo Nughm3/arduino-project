@@ -12,7 +12,7 @@
 #define MAX_LENGTH 200
 
 #define SONG_LENGTH 150
-#define MENU_SONG_LENGTH 300
+#define MENU_SONG_LENGTH 275
 
 #include <Tone.h>
 Tone bass;
