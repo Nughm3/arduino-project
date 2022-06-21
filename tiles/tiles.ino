@@ -11,7 +11,7 @@
 
 #define MAX_LENGTH 200
 
-#define SONG_LENGTH 90
+#define SONG_LENGTH 150
 
 #include <Tone.h>
 Tone bass;
@@ -23,7 +23,97 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 bool inMenu = true;
 int score = 0;
 
-float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odyssey
+float song_length[3] = {5, 15000, 5};
+float song_speed[3] = {30, 25, 30};
+
+float gusty[MAX_LENGTH][2] = { // Song 1 Layout. "Gusty Garden Galaxy" - Super Mario Galaxy (2007)
+  {8, 1},
+  {9.75, 3},
+  {10.5, 4},
+  {11.25, 3},
+  {12, 4},
+  {14, 1},
+  {15.5, 1},
+  {16, 2},
+  {18, 1},
+  {18.75, 2},
+  {19.5, 3},
+  {20.25, 4},
+  {21.5, 3},
+  {22.75, 2},
+  {24, 1},
+  {27, 1},
+  {27, 3},
+  {30, 1},
+  {30, 3},
+  {32, 1},
+  {32, 4},
+  {35, 1},
+  {35, 4},
+  {38, 1},
+  {38, 4},
+  {40, 2},
+  {40, 4},
+  {43, 2},
+  {43, 4},
+  {46, 2},
+  {46, 4},
+  {48, 1},
+  {48, 3},
+  {51, 1},
+  {51, 3},
+  {54, 3},
+  /*------*/
+  {56, 3},
+  {61, 2},
+  {62, 4},
+  {63, 3},
+  {64, 2},
+  {69, 1},
+  {70, 2},
+  {71, 3},
+  {72, 2},
+  {75, 1},
+  {80, 2},
+  {83, 2},
+  {86, 1},
+  {88, 3},
+  {93, 2},
+  {94, 4},
+  {95, 3},
+  {96, 2},
+  {99, 1},
+  {101, 2},
+  {103, 3},
+  {104, 2},
+  {107, 1},
+  {118, 1},
+  {120, 4},
+  {125, 1},
+  {126, 3},
+  {127, 2},
+  {128, 3},
+  {131, 2},
+  {133, 1},
+  {134, 2},
+  {135, 3},
+  {136, 4},
+  {141, 2},
+  {142, 4},
+  {143, 3},
+  {144, 2},
+  {147, 1},
+  {152, 2},
+  {157, 1},
+  {158, 3},
+  {159, 2},
+  {160, 1},
+  {163, 2},
+  {165, 3},
+  {167, 4},
+}
+
+float wooded[MAX_LENGTH][2] = { // Song 2 Layout. "Wooded Kingdom" - Super Mario Odyssey (2017)
   {9, 1},
   {10, 2},
   {11, 3},
@@ -70,9 +160,9 @@ float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odys
   {82, 4},
   {83, 3},
   {84, 1},
-  {86, 4},
+  {86, 2},
   {88, 1},
-  {90, 4},
+  {90, 2},
   {92, 3},
   {94, 3},
   {97, 2},
@@ -82,24 +172,84 @@ float wooded[MAX_LENGTH][2] = { // The song. "Wooded Kingdom" - Super Mario Odys
   {94, 1},
   {96, 1},
   {98, 1},
-
-  {105, 1},
-  {106, 2},
+  
+  {97, 1},
+  {98, 2},
+  {99, 3},
+  {100, 4},
+  {102, 4},
+  {100, 1},
+  {102, 1},
+  {104, 1},
+  {106, 1},
+  {106, 4},
   {107, 3},
-  {108, 4},
-  {110, 4},
-  {108, 1},
-  {110, 1},
-  {112, 1},
-  {114, 1},
-  {114, 4},
-  {114, 3},
+  {108, 2},
+  {110, 2},
+  {112, 2},
+  {114, 2},
+  {116, 4},
+  {118, 4},
+  {121, 2},
+  {122, 3},
+  {123, 4},
+  {116, 1},
+  {118, 1},
+  {120, 1},
+  {122, 1},
+  {124, 1},
+  {124.5, 2},
+  {125, 3},
+  {125.5, 4},
+  {126, 1},
+  {126.5, 2},
+  {127, 3},
+  {127.5, 4},
+  {128, 3},
+  {129, 1},
+  {130, 2},
+  {131, 3},
+  /*------*/
+  {132, 3},
+  {132, 4},
+  {135, 2},
+  {135, 3},
+  {138, 1},
+  {138, 2},
+
+  {145, 1},
+  {146, 2},
+  {147, 3},
+  
+  {148, 1},
+  {148, 2},
+  {151, 2},
+  {151, 3},
+  {154, 3},
+  {154, 4},
+
+  {161, 1},
+  {162, 2},
+  {163, 3},
+
+  {164, 3},
+  {164, 4},
+  {167, 2},
+  {167, 3},
+  {170, 1},
+  {170, 2},
+
+  {177, 3},
+  {178, 1},
+  {179, 3},
+  {180, 1},
 };
 
-float current_song[MAX_LENGTH][2] = {};
+float yoshi[MAX_LENGTH][2] = { // Song 3 Layout. "Athletic Theme" - Yoshi's Island (1995)
+  {9, 1},
+}
 
-float song_length[3] = {15000, 5, 5};
-float song_speed[3] = {30, 30, 30};
+float current_song[MAX_LENGTH][2] = {};
 
 float menu_song[MAX_LENGTH][3] = {
   {4, NOTE_E4, 0},
@@ -130,8 +280,16 @@ int IndexFix(int pixel) { // Fixes pixel indexing cuz the original one is TRASH
 void ChooseSong(int song) {
   for (int i = 0; i < SONG_LENGTH; i++) {
     if (song == 1) {
+      current_song[i][0] = gusty[i][0];
+      current_song[i][1] = gusty[i][1];
+    }
+    if (song == 2) {
       current_song[i][0] = wooded[i][0];
       current_song[i][1] = wooded[i][1];
+    }
+    if (song == 3) {
+      current_song[i][0] = yoshi[i][0];
+      current_song[i][1] = yoshi[i][1];
     }
   }
 }
@@ -141,7 +299,11 @@ void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if
     int posy = 3 + (song[i][0] * 4);
     int posx = 64 * (song[i][1] - 1);
 
-    for (int j = 0; j < 5; j++) {
+    float note_size;
+    if (selected_song <= 2) note_size = 5;
+    else note_size = 4;
+    
+    for (int j = 0; j < note_size; j++) {
 
       int rgb[3] = {0, 0, 0};
       if (song[i][1] == 1) rgb[0] = 10;
@@ -150,7 +312,7 @@ void DrawTiles(float song[MAX_LENGTH][2]) { // Draws the tiles on the screen. if
       if (song[i][1] == 4) rgb[0] = 10;
       if (song[i][1] == 4) rgb[1] = 10;
 
-      if (j == 4) {
+      if (j == note_size - 1) {
         rgb[0] = 0;
         rgb[1] = 0;
         rgb[2] = 0;
@@ -389,15 +551,15 @@ void ShowMenu() {
 
   if (selected_song == 1) {
     lcd.setCursor(1, 1);
-    lcd.print("Wooded Kingdom");
+    lcd.print("Gusty Garden");
   }
   if (selected_song == 2) {
     lcd.setCursor(1, 1);
-    lcd.print("Test2");
+    lcd.print("Wooded Kingdom");
   }
   if (selected_song == 3) {
     lcd.setCursor(1, 1);
-    lcd.print("Athletic Theme");
+    lcd.print("Yoshi's Island");
   }
 
   for (int i = 42; i <= 43; i++) NeoPixel.setPixelColor(IndexFix(i), NeoPixel.Color(5, 0, 0));
@@ -516,8 +678,7 @@ void loop() {
       ShowScore();
       lcdUpdate = 0;
     }
-    //    delay(song_speed(selected_song - 1));
-    delay(30);
+    delay(song_speed[selected_song - 1]);
   }
   else {
     MenuMusic();
