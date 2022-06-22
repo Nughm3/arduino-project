@@ -9,10 +9,10 @@
 #define PIN_NEO_PIXEL  13
 #define NUM_PIXELS     512
 
-#define MAX_LENGTH 200
+#define MAX_LENGTH 150
 
 #define SONG_LENGTH 150
-#define MENU_SONG_LENGTH 275
+#define MENU_SONG_LENGTH 146
 
 #include <Tone.h>
 Tone bass;
@@ -23,9 +23,10 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 bool inMenu = true;
 int score = 0;
+int selected_song = 1;
 
-float song_length[3] = {15000, 15000, 15000};
-float song_speed[3] = {30, 25, 25};
+float song_length[3] = {26000, 29000, 18000};
+float song_speed[3] = {11, 8, 10};
 
 float gusty[MAX_LENGTH][2] = { // Song 1 Layout. "Gusty Garden Galaxy" - Super Mario Galaxy (2007)
   {8, 1},
@@ -112,7 +113,7 @@ float gusty[MAX_LENGTH][2] = { // Song 1 Layout. "Gusty Garden Galaxy" - Super M
   {163, 2},
   {165, 3},
   {167, 4},
-}
+};
 
 float wooded[MAX_LENGTH][2] = { // Song 2 Layout. "Wooded Kingdom" - Super Mario Odyssey (2017)
   {9, 1},
@@ -261,9 +262,9 @@ float yoshi[MAX_LENGTH][2] = { // Song 3 Layout. "Athletic Theme" - Yoshi's Isla
   {14.5, 3},
   {15, 1},
 
-  {16, 2},
-  {16.5, 3},
-  {17, 2},
+  {16, 1},
+  {16.5, 2},
+  {17, 1},
   {17.5, 4},
   {18.5, 3},
   {19, 2},
@@ -368,15 +369,6 @@ float yoshi[MAX_LENGTH][2] = { // Song 3 Layout. "Athletic Theme" - Yoshi's Isla
   {84, 4},
   {85, 3},
   {86, 2},
-  {87, 1},
-  {72, 1},
-  {73, 1},
-  {74, 1},
-  {75, 1},
-  {76, 1},
-  {77, 1},
-  {78, 1},
-  {79, 1},
   /*------*/
   {88, 3},
   {88.5, 2},
@@ -398,44 +390,11 @@ float yoshi[MAX_LENGTH][2] = { // Song 3 Layout. "Athletic Theme" - Yoshi's Isla
   {101, 4},
   {102, 3},
   {103, 2},
-  {104, 1},
-}
+  {104, 1}};
 
 float current_song[MAX_LENGTH][2] = {};
 
-float menu_song[MAX_LENGTH][3] = { // Menu Music. "Delfino Plaza" - Super Mario Sunshine (2002)
-  {4, NOTE_E4, 0},
-  {4.25, NOTE_E4, 0},
-  {4.5, NOTE_G4, 0},
-  {4.75, NOTE_G4, 0},
-  {5, NOTE_FS4, 0},
-  {5.25, NOTE_FS4, 0},
-  {5.5, NOTE_F4, 0},
-  {5.75, NOTE_F4, 0},
-  {6, NOTE_E4, 0},
-  {6.25, NOTE_E4, 0},
-  {6.5, NOTE_G4, 0},
-  {6.75, NOTE_G4, 0},
-  {7, NOTE_FS4, 0},
-  {7.25, NOTE_FS4, 0},
-  {7.5, NOTE_F4, 0},
-  {7.75, NOTE_F4, 0},
-  {8, NOTE_E4, 0},
-  {8.25, NOTE_E4, 0},
-  {8.5, NOTE_G4, 0},
-  {8.75, NOTE_G4, 0},
-  {9, NOTE_FS4, 0},
-  {9.25, NOTE_FS4, 0},
-  {9.5, NOTE_F4, 0},
-  {9.75, NOTE_F4, 0},
-  {10, NOTE_E4, 0},
-  {10.25, NOTE_E4, 0},
-  {10.5, NOTE_G4, 0},
-  {10.75, NOTE_G4, 0},
-  {11, NOTE_FS4, 0},
-  {11.25, NOTE_FS4, 0},
-  {11.5, NOTE_F4, 0},
-  {11.75, NOTE_F4, 0},
+float menu_song[MENU_SONG_LENGTH][3] = { // Menu Music. "Delfino Plaza" - Super Mario Sunshine (2002)
 
   {12.125, NOTE_FS4, 0},
   {12.25, NOTE_CS5, 0},
@@ -459,28 +418,6 @@ float menu_song[MAX_LENGTH][3] = { // Menu Music. "Delfino Plaza" - Super Mario 
   {17.75, NOTE_GS4, 0},
   {18, NOTE_A4, 0},
 
-  {20.125, NOTE_FS4, 0},
-  {20.25, NOTE_CS5, 0},
-  {20.5, NOTE_CS5, 0},
-  {20.75, NOTE_E4, 0},
-  {21, NOTE_D4, 0},
-  {21.375, NOTE_B4, 0},
-  {22.125, NOTE_FS4, 0},
-  {22.25, NOTE_CS5, 0},
-  {22.5, NOTE_CS5, 0},
-  {22.75, NOTE_E4, 0},
-  {23, NOTE_D4, 0},
-  {23.375, NOTE_B4, 0},
-  {24.125, NOTE_FS4, 0},
-  {24.25, NOTE_CS5, 0},
-  {24.5, NOTE_CS5, 0},
-  {24.75, NOTE_CS5, 0},
-  {25, NOTE_D5, 0},
-  {25.375, NOTE_FS4, 0},
-  {25.625, NOTE_FS4, 0},
-  {25.75, NOTE_GS4, 0},
-  {26, NOTE_A4, 0},
-
   {28.25, NOTE_D5, 0},
   {29, NOTE_FS4, 0},
   {29.5, NOTE_D5, 0},
@@ -503,38 +440,6 @@ float menu_song[MAX_LENGTH][3] = { // Menu Music. "Delfino Plaza" - Super Mario 
   {42, NOTE_GS4, 0},
   {43, NOTE_E5, 0},
   /* -------------------- */
-  {4, NOTE_A2, 1},
-  {4.25, NOTE_E3, 1},
-  {4.5, NOTE_AS2, 1},
-  {4.75, NOTE_E3, 1},
-  {5, NOTE_B2, 1},
-  {5.25, NOTE_FS3, 1},
-  {5.5, NOTE_E3, 1},
-  {5.75, NOTE_GS3, 1},
-  {6, NOTE_A2, 1},
-  {6.25, NOTE_E3, 1},
-  {6.5, NOTE_AS2, 1},
-  {6.75, NOTE_E3, 1},
-  {7, NOTE_B2, 1},
-  {7.25, NOTE_FS3, 1},
-  {7.5, NOTE_E3, 1},
-  {7.75, NOTE_GS3, 1},
-  {8, NOTE_A2, 1},
-  {8.25, NOTE_E3, 1},
-  {8.5, NOTE_AS2, 1},
-  {8.75, NOTE_E3, 1},
-  {9, NOTE_B2, 1},
-  {9.25, NOTE_FS3, 1},
-  {9.5, NOTE_E3, 1},
-  {9.75, NOTE_GS3, 1},
-  {10, NOTE_A2, 1},
-  {10.25, NOTE_E3, 1},
-  {10.5, NOTE_AS2, 1},
-  {10.75, NOTE_E3, 1},
-  {11, NOTE_B2, 1},
-  {11.25, NOTE_FS3, 1},
-  {11.5, NOTE_E3, 1},
-  {11.75, NOTE_GS3, 1},
 
   {12, NOTE_A2, 1},
   {12.25, NOTE_E3, 1},
@@ -568,39 +473,6 @@ float menu_song[MAX_LENGTH][3] = { // Menu Music. "Delfino Plaza" - Super Mario 
   {19.25, NOTE_FS3, 1},
   {19.5, NOTE_E3, 1},
   {19.75, NOTE_GS3, 1},
-
-  {20, NOTE_A2, 1},
-  {20.25, NOTE_E3, 1},
-  {20.5, NOTE_AS2, 1},
-  {20.75, NOTE_E3, 1},
-  {21, NOTE_B2, 1},
-  {21.25, NOTE_FS3, 1},
-  {21.5, NOTE_E3, 1},
-  {21.75, NOTE_GS3, 1},
-  {22, NOTE_A2, 1},
-  {22.25, NOTE_E3, 1},
-  {22.5, NOTE_AS2, 1},
-  {22.75, NOTE_E3, 1},
-  {23, NOTE_B2, 1},
-  {23.25, NOTE_FS3, 1},
-  {23.5, NOTE_E3, 1},
-  {23.75, NOTE_GS3, 1},
-  {24, NOTE_A2, 1},
-  {24.25, NOTE_E3, 1},
-  {24.5, NOTE_AS2, 1},
-  {24.75, NOTE_E3, 1},
-  {25, NOTE_B2, 1},
-  {25.25, NOTE_FS3, 1},
-  {25.5, NOTE_E3, 1},
-  {25.75, NOTE_GS3, 1},
-  {26, NOTE_A2, 1},
-  {26.25, NOTE_E3, 1},
-  {26.5, NOTE_A2, 1},
-  {26.75, NOTE_E3, 1},
-  {27, NOTE_A2, 1},
-  {27.25, NOTE_A2, 1},
-  {27.5, NOTE_A2, 1},
-  {27.75, NOTE_A2, 1},
 
   {28, NOTE_D3, 1},
   {28.25, NOTE_FS3, 1},
@@ -776,11 +648,6 @@ void ShowScore() {
     lcd.setCursor(0, 1);
     lcd.print("Score: ");
     lcd.print(score);
-
-    //  lcd.setCursor(12, 1);
-    //  int accuracy = round((notesPassed - misses) / notesPassed * 100);
-    //  lcd.print(accuracy);
-    //  lcd.print("%");
   }
 }
 
@@ -803,7 +670,7 @@ void Miss() {
   comboMultiplier = 1;
 }
 
-float menu_music = 0;
+float menu_music = 10;
 float song_length_left;
 
 void MoveTiles() { // Moves the tiles in a 2d array downwards. I should make this take in a 2d array but idk how lol
@@ -936,8 +803,6 @@ byte right_arrow[8] = {
   0b00000
 };
 
-int selected_song = 1;
-
 void ShowMenu() {
   lcd.clear();
   lcd.setCursor(2, 0);
@@ -1011,16 +876,26 @@ void ShowMenu() {
   for (int i = 126; i <= 127; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 1));
 }
 
-void MenuMusic() {
-  for (int i = 0; i < MENU_SONG_LENGTH; i++) {
-    if (abs(menu_song[i][0] - menu_music) < 0.05f) {
-      if (menu_song[i][2] == 0) melody.play(menu_song[i][1], 125);
-      if (menu_song[i][2] == 1) bass.play(menu_song[i][1], 125);
-    }
-  }
+bool loop1 = false;
 
-  menu_music += 0.125f;
-  if (menu_music >= 43.95) menu_music = 4;
+void MenuMusic() {
+//  for (int i = 0; i < MENU_SONG_LENGTH; i++) {
+//    if (abs(menu_song[i][0] - menu_music) < 0.05f) {
+//      if (menu_song[i][2] == 0) melody.play(menu_song[i][1], 125);
+//      if (menu_song[i][2] == 1) bass.play(menu_song[i][1], 125);
+//    }
+//  }
+//
+//  menu_music += 0.125f;
+//  
+//  if (menu_music > 19.95 && menu_music < 20.05 && !loop1) {
+//    menu_music = 12;
+//    loop1 = true;
+//  }
+//  if (menu_music > 19.95 && menu_music < 20.05 && loop1) menu_music = 28;
+//  if (menu_music > 40) loop1 = false;
+//  
+//  if (menu_music >= 43.95) menu_music = 12;
 }
 
 bool button1PressedMenu = true;
