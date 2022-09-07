@@ -14,9 +14,9 @@
 #define SONG_LENGTH 150
 #define MENU_SONG_LENGTH 146
 
-#include <Tone.h>
-Tone bass;
-Tone melody;
+//#include <Tone.h>
+//Tone bass;
+//Tone melody;
 
 Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -876,9 +876,8 @@ void ShowMenu() {
   for (int i = 126; i <= 127; i++) NeoPixel.setPixelColor(IndexFix(i + 256), NeoPixel.Color(0, 0, 1));
 }
 
-bool loop1 = false;
-
-void MenuMusic() {
+//bool loop1 = false;
+//void MenuMusic() {
 //  for (int i = 0; i < MENU_SONG_LENGTH; i++) {
 //    if (abs(menu_song[i][0] - menu_music) < 0.05f) {
 //      if (menu_song[i][2] == 0) melody.play(menu_song[i][1], 125);
@@ -896,7 +895,7 @@ void MenuMusic() {
 //  if (menu_music > 40) loop1 = false;
 //  
 //  if (menu_music >= 43.95) menu_music = 12;
-}
+//}
 
 bool button1PressedMenu = true;
 bool button2PressedMenu = true;
@@ -954,9 +953,9 @@ void loop() {
     delay(song_speed[selected_song - 1]);
   }
   else {
-    MenuMusic();
+//    MenuMusic();
     CheckMenuButtons();
-    delay(90);
+    delay(50);
   }
   NeoPixel.show();
 }
@@ -977,8 +976,8 @@ void setup() {
 
   Serial.begin(9600);
 
-  melody.begin(8);
-  bass.begin(9);
+//  melody.begin(8);
+//  bass.begin(9);
 
   lcd.createChar(0, left_arrow);
   lcd.createChar(1, right_arrow);
